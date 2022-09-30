@@ -23,3 +23,4 @@ The list below isn't exhaustive and there is an ongoing exercise to estimate the
 * "Kafka Firewall"
 * Logging IP address conveyed via http://www.haproxy.org/download/1.8/doc/proxy-protocol.txt[proxy protocol] when establishing a connection; facilitating audit logging
 * Protocol bridging (e.g. AMQP/Kafka)
+* Selective RPC santisations e.g. some tools include kafka topic defaults in topic creations requests resulting in overly specific definitions.  This feature could prune away superfluous definitions.
