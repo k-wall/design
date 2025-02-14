@@ -616,11 +616,13 @@ spec:
 * ClusterIP/TCP support only
 * Operator restricted to max of 1 ingress per proxy (i.e. matches capabilities of Kroxylicious operand)
 * Target Cluster `reference` supported -  TCP only.  No Kafka refs.
+* Simple status section reporting the bootstrap.
 * Start building out system test suite
 
 2. ClusterIP/TLS
 
 * Adds basic TLS support for downstream side
+* Enhance status section reporting more errors and warnings.
 
 3. LoadBalancer
 
