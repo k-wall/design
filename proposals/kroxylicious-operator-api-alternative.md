@@ -630,11 +630,21 @@ spec:
 
 5. Upstream TLS and other TLS controls.
 
-6. Strimzi Kafka refs.
+* TLS controls like protocol & cipher suite restrictions   
+
+6. Allow the upstream to be specified by the Strimzi Kafka reference.
+
+* Use the Kafka CR status to provide things like TLS settings
 
 Parallel work:
 
-1. Kroxylicious - server certificate grab bag support (serve the right certificate and intermediates based on SNI)
-2. Allow Kroxylicious to have multiple listeners per virtual cluster 
+1. Kroxylicious - server certificate grab bag support (serve the right certificate and intermediates based on SNI match)
+2. Allow Kroxylicious to have multiple listeners per virtual cluster _routed to the same target cluster listener_.  This makes the cluster accessible by both on-cluster and off-cluster workloads.
 3. Allow Filters to reference secrets
+
+## Not in Scope
+
+1. Allow virtual cluster listener to target specific listeners of the target cluster.   This might be useful say if user want
+   to use different SASL mechanisms for different applications (say OAUTH for webapps and SCRAM for traditional apps).
+
 
