@@ -317,7 +317,7 @@ spec:
 
 What would operator create:
 * kroxylicious deployment, 1 replica
-* proxy relies on port based routing (use RangeAwarePortPerNode scheme)
+* proxy relies on port based routing (needs new PortPerNode scheme that allows the Operator to control the ports precisely.  This is needed to prevent the potential for "crossed-lines" during reconcilations.)
 * 1 ClusterIP services (with n+1 ports) - operator needs to _deterministically_ assign a block of ports for this VC and create the port/target mapping in the Service accordingly.
 * Kafka Clients connect to serviceaddress:9082 
 
@@ -380,7 +380,7 @@ spec:
 
 What would operator create:
 * kroxylicious deployment, 1 replica
-* proxy relies on port based routing (use RangeAwarePortPerNode scheme)
+* proxy relies on port based routing  (needs new PortPerNode scheme that allows the Operator to control the ports precisely.  This is needed to prevent the potential for "crossed-lines" during reconcilations.)
 * 1 ClusterIP services (with n+1 ports) - operator needs to _deterministically_ assign a block of ports for this VC and create the port/target mapping in the Service accordingly.
 * Kafka Clients connect to serviceaddress:9082 
 
