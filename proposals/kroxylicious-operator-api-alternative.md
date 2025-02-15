@@ -614,9 +614,10 @@ spec:
 1. ClusterIP/TCP
 
 * ClusterIP/TCP support only
-* Operator restricted to max of 1 ingress per proxy (i.e. matches capabilities of Kroxylicious operand)
+* Operator restricted to max of 1 ingress per proxy (in other words matches the current capabilities of Kroxylicious operand)
 * Target Cluster `reference` supported -  TCP only.  No Kafka refs.
 * Simple status section reporting the bootstrap.
+* Any changes to the any Proxy/ProxyIngress/VirtualCluster/Filter CR or secrets provide TLS material will cause the Proxy Deployment to roll.
 * Start building out system test suite
 
 2. ClusterIP/TLS
@@ -641,6 +642,7 @@ Parallel work:
 1. Kroxylicious - server certificate grab bag support (serve the right certificate and intermediates based on SNI match)
 2. Allow Kroxylicious to have multiple listeners per virtual cluster _routed to the same target cluster listener_.  This makes the cluster accessible by both on-cluster and off-cluster workloads.
 3. Allow Filters to reference secrets
+4. Proxy dynamically reloads files providing TLS material (allows certficates to be rolled).
 
 ## Not in Scope
 
