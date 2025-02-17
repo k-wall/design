@@ -183,7 +183,7 @@ spec:
      trustAnchorRefs:
       - kind: ConfigMap # if present must be ConfigMap, otherwise defaulted to ConfigMap
         group: ""  # if present must be "", otherwise defaulted to ""
-        name: servercert
+        name: trustbundle
         namespace: # namespace of the configmap, if omitted assumes namespace of this resource
       trustOptions:
        clientAuth: REQUIRED
@@ -226,7 +226,7 @@ spec:
       trustAnchorRefs:
        - kind: ConfigMap # if present must be ConfigMap, otherwise defaulted to ConfigMap
          group: ""  # if present must be "", otherwise defaulted to ""
-         name: servercert
+         name: trustbundle
          namespace: # namespace of the configmap, if omitted assumes namespace of this resource
 
     # ordered list of filters to be used by the virtualcluster
