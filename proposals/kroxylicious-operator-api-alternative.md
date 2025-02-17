@@ -25,8 +25,8 @@ Responsible for the proxy tier and how proxies are exposed to the network.
 ### Developer
 
 Responsible for the configuration of the virtualcluster and filters.
-Responsible for providing the virtualcluster TLS key material and trust material (in Secret and ConfigMap).
-Responsible for providing anyy key/trust material required to connect to the target cluster.
+Responsible for providing the virtualcluster TLS key/trust material (in Secret and ConfigMap respectively).
+Responsible for providing any key/trust material required to connect to the target cluster (in Secret and ConfigMap respectively).
 
 ## API
 
