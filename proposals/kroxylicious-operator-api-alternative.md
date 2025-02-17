@@ -1,10 +1,34 @@
 # Kroxylicious Operator API - Alternative Proposal.
 
-Keith isn't sure that 'Gateway API flavoured' approach for modelling ingress is the right one for Kroxylicious Operator.
-He thinks that our ingress API should work with Gateway APIs, rather than be one itself.  So, this 
+<!-- TOC -->
+* [Kroxylicious Operator API - Alternative Proposal.](#kroxylicious-operator-api---alternative-proposal)
+* [Background](#background)
+* [CRDs](#crds)
+* [Personas / Responsibilities](#personas--responsibilities)
+  * [Infrastructure admin](#infrastructure-admin)
+  * [Developer](#developer)
+* [API](#api)
+  * [Proxy](#proxy)
+  * [ProxyIngress](#proxyingress)
+  * [VirtualCluster](#virtualcluster)
+  * [Filter](#filter)
+* [Worked examples](#worked-examples)
+  * [On Cluster Traffic - plain downstream & upstream](#on-cluster-traffic---plain-downstream--upstream)
+  * [On Cluster Traffic - tls downstream & upstream](#on-cluster-traffic---tls-downstream--upstream)
+    * [On Cluster Traffic - tls downstream & upstream - varation using OpenShift Cluster CA generated cert](#on-cluster-traffic---tls-downstream--upstream---varation-using-openshift-cluster-ca-generated-cert)
+  * [Off Cluster Traffic (OpenShift Route)](#off-cluster-traffic-openshift-route)
+  * [Off Cluster Traffic (Load Balancer)](#off-cluster-traffic-load-balancer)
+  * [Upstream specified by Kafka CR](#upstream-specified-by-kafka-cr)
+* [Phased High Level Implementation Plan](#phased-high-level-implementation-plan)
+* [Not in Scope](#not-in-scope)
+<!-- TOC -->
+# Background
+
+Keith isn't sure that '[Gateway API flavoured approach](https://github.com/kroxylicious/design/pull/52)' for modelling
+ingress is the right one for Kroxylicious Operator. He thinks that our ingress API should work with Gateway APIs, rather than be one itself.  So, this 
 has prompted him to think about an alternative API design.
 
-## CRDs
+# CRDs
 
 * Proxy CR - an instance of the Kroxylicious
 * ProxyIngress CR - Defines a way to access a Proxy
@@ -16,23 +40,23 @@ has prompted him to think about an alternative API design.
 https://excalidraw.com/#json=CVAZMl-MuN1QP2cIW3hcA,cEWi5VjUg1mK2N1lvU-_xQ
 
 
-## Personas / Responsibilies
+# Personas / Responsibilities
 
-### Infrastructure admin
+## Infrastructure admin
 
 Responsible for the proxy tier and how proxies are exposed to the network.
 
-### Developer
+## Developer
 
 Responsible for the configuration of the virtualcluster and filters.
 Responsible for providing the virtualcluster TLS key/trust material (in Secret and ConfigMap respectively).
 Responsible for providing any key/trust material required to connect to the target cluster (in Secret and ConfigMap respectively).
 
-## API
+# API
 
-### Proxy
+## Proxy
 
-The Proxy CR is the responsibilty of the the Infrastructure admin.
+The Proxy CR is the responsibility of the Infrastructure admin.
 
 Declares an instance of the proxy and defines the ingress mechanisms available to it.
 
@@ -76,9 +100,9 @@ status:
      - ...
 ```
 
-### ProxyIngress
+## ProxyIngress
 
-The ProxyIngress CR is the responsibilty of the the Infrastructure admin.
+The ProxyIngress CR is the responsibility of the Infrastructure admin.
 
 It declares a named ingress mechanism - in other words, a way for traffic to get to a proxy.  ProxyIngress knows about four types:
 
@@ -123,8 +147,8 @@ spec:
       namespace: namespace # namespace of the gateway, if omitted assumes namespace of this resource
       sectionName: mytlspassthrough # refers to a TLS passthrough listener defined in the Gateway
 
- # Optional
- infrastructure:
+  # Optional
+  infrastructure:
     # Controls the Admin influence the annotations/labels created on the ingress objects (Service, OpenShift Routes, TLSRoutes etc).
     # This lets the Infrastructure admin  specify things like:
     # https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#lb-type
@@ -142,15 +166,15 @@ status:
      reason: r 
 ```      
 
-### VirtualCluster
+## VirtualCluster
 
-The VirtualCluster CR is the responsibilty of the the Developer.
+The VirtualCluster CR is the responsibility of the Developer.
 
 Declares a virtualcluster.
 
 A Virtualcluster is associated with exactly one Proxy.
 
-It enumerate the ingresses that are to be used by the virtualcluster.  It also supplies the virtual cluster ingress specific information
+It enumerates the ingresses that are to be used by the virtualcluster.  It also supplies the virtual cluster ingress specific information
 such as the TLS certificates.
 
 The virtualcluster has a reference to a single target cluster which may be expressed using either a reference to a Strimzi Kafka object, or generic bootstraping information.
@@ -178,9 +202,9 @@ spec:
         group: ""  # if present must be "", otherwise defaulted to ""
         name: servercert
         namespace: # namespace of the secret, if omitted assumes namespace of this resource
-     # peer trust
-     # configMap provided by the Developer
-     trustAnchorRefs:
+      # peer trust
+      # configMap provided by the Developer
+      trustAnchorRefs:
       - kind: ConfigMap # if present must be ConfigMap, otherwise defaulted to ConfigMap
         group: ""  # if present must be "", otherwise defaulted to ""
         name: trustbundle
@@ -209,8 +233,8 @@ spec:
        bootstrap: bootstrap:9092
        protocol: TCP|TLS
        nodeIdRanges:
-      - name: mybrokers
-        range:
+       - name: mybrokers
+         range:
           startInclusive: 0
           endExclusive: 3
     tls:
@@ -254,7 +278,7 @@ status:
      - ...
 ```
 
-### Filter
+## Filter
 
 The VirtualCluster CR is the responsibilty of the the Developer - As per current implementation.
 
@@ -316,8 +340,8 @@ spec:
        bootstrap: upstream:9092
        protocol: TCP
        nodeIdRanges:
-      - name: mybrokers
-        range:
+       - name: mybrokers
+         range:
           startInclusive: 0
           endExclusive: 3
   filterRef:
@@ -378,8 +402,8 @@ spec:
        bootstrap: upstream:9092
        protocol: TLS
        nodeIdRanges:
-      - name: mybrokers
-        range:
+       - name: mybrokers
+         range:
           startInclusive: 0
           endExclusive: 3
 
@@ -414,7 +438,7 @@ spec:
 
   ingress:
   - name: myclusterip
-   infrastructure:
+    infrastructure:
        annotations:
          service.beta.openshift.io/serving-cert-secret-name=myservingcert   # Tells openshift to generate a secret
     tls:
@@ -479,8 +503,8 @@ spec:
        bootstrap: upstream:9092
        protocol: TLS
        nodeIdRanges:
-      - name: mybrokers
-        range:
+       - name: mybrokers
+         range:
           startInclusive: 0
           endExclusive: 3
 
@@ -622,23 +646,22 @@ spec:
     name: encryption 
 ```
 
-
-
-## Phased High Level Implementation Plan
+# Phased High Level Implementation Plan
 
 1. ClusterIP/TCP
 
 * ClusterIP/TCP support only
 * Operator restricted to max of 1 ingress per proxy (in other words matches the current capabilities of Kroxylicious operand)
-* Target Cluster `reference` supported -  TCP only.  No Kafka refs.
+* Target Cluster `bootstrapping` supported -  TCP only.  No Kafka refs.
 * Simple status section reporting the bootstrap.
-* Any changes to the any Proxy/ProxyIngress/VirtualCluster/Filter CR or secrets provide TLS material will cause the Proxy Deployment to roll.
+* Any changes to any Proxy/ProxyIngress/VirtualCluster/Filter CRs or secrets providing TLS material will cause the Proxy Deployment to roll.
 * Start building out system test suite
 
 2. ClusterIP/TLS
 
 * Adds basic TLS support for downstream side
-* Enhance status section reporting more errors and warnings.
+* Key material must be provided in a single file.
+* Enhances status section ->  more errors and warnings reported
 
 3. LoadBalancer
 
@@ -657,11 +680,11 @@ Parallel work:
 1. Kroxylicious - server certificate grab bag support (serve the right certificate and intermediates based on SNI match)
 2. Allow Kroxylicious to have multiple listeners per virtual cluster _routed to the same target cluster listener_.  This makes the cluster accessible by both on-cluster and off-cluster workloads.
 3. Allow Filters to reference secrets
-4. Proxy dynamically reloads files providing TLS material (allows certficates to be rolled).
+4. Proxy dynamically reloads files providing TLS material (i.e. allows certificates to be rolled).
 
-## Not in Scope
+# Not in Scope
 
-1. Gateway API integration.   This proposal imagines integrating with the TLSRoute Gateway API object.   This isn't yet considered stable.   There are some Gateway API implementations
+1. Gateway API integration.   This proposal imagines integrating with the `TLSRoute` Gateway API object.   This Gateway API isn't yet considered stable.   There are some Gateway API implementations
    providing it as a beta feature.   We might experiment with those, but I don't imaging we'll actually implement `gateway: {}` part of ProxyIngress until the API firms up.
 1. Allow virtual cluster listener to target specific listeners of the target cluster.   This might be useful say if user want
    to use different SASL mechanisms for different applications (say OAUTH for webapps and SCRAM for traditional apps).
