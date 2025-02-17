@@ -229,11 +229,11 @@ spec:
          name: trustbundle
          namespace: # namespace of the configmap, if omitted assumes namespace of this resource
 
-    # ordered list of filters to be used by the virtualcluster
-    filterRefs:
-    - group: filter.kroxylicious.io
-      kind: Filter
-      name: encryption
+  # ordered list of filters to be used by the virtualcluster
+  filterRefs:
+  - group: filter.kroxylicious.io
+    kind: Filter
+    name: encryption
 status:
    # overall status
    conditions:
