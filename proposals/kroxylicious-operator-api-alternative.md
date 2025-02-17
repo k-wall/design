@@ -37,7 +37,7 @@ The Proxy CR is the responsibilty of the the Infrastructure admin.
 Declares an instance of the proxy and defines the ingress mechanisms available to it.
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: Proxy
 metadata:
   name: myproxy
@@ -88,7 +88,7 @@ It declares a named ingress mechanism - in other words, a way for traffic to get
 * gateway - for off-cluster realised using Gateway API.  Supports `TLSRoutes` with listener type of `passthrough`.
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: ProxyIngress
 metadata:
   name: myclusterip
@@ -156,7 +156,7 @@ such as the TLS certificates.
 The virtualcluster has a reference to a single target cluster which may be expressed using either a reference to a Strimzi Kafka object, or generic bootstraping information.
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: VirtualCluster
 metadata:
   name: mycluster
@@ -277,7 +277,7 @@ spec:
 ## On Cluster Traffic - plain downstream & upstream
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: Proxy
 metadata:
   name: myproxy
@@ -285,7 +285,7 @@ spec: {}
 ```
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: ProxyIngress
 metadata:
   name: myclusterip
@@ -298,7 +298,7 @@ spec:
 ```
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: VirtualCluster
 metadata:
   name: mycluster
@@ -335,7 +335,7 @@ What would operator create:
 ## On Cluster Traffic - tls downstream & upstream
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: Proxy
 metadata:
   name: myproxy
@@ -343,7 +343,7 @@ spec: {}
 ```
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: ProxyIngress
 metadata:
   name: oncluster
@@ -357,7 +357,7 @@ spec:
 ```
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: VirtualCluster
 metadata:
   name: mycluster
@@ -404,7 +404,7 @@ What would operator create:
 Proxy and ProxyIngress as above
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: VirtualCluster
 metadata:
   name: mycluster
@@ -438,7 +438,7 @@ What would operator create:
 ## Off Cluster Traffic (OpenShift Route)
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: Proxy
 metadata:
   name: myproxy
@@ -446,7 +446,7 @@ spec: {}
 ```
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: ProxyIngress
 metadata:
   name: myopenshiftroute
@@ -458,7 +458,7 @@ spec:
 ```
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: VirtualCluster
 metadata:
   name: mycluster
@@ -506,7 +506,7 @@ Note: that the operator would write the virtualcluster proxy config based on the
 ## Off Cluster Traffic (Load Balancer)
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: Proxy
 metadata:
   name: myproxy
@@ -514,7 +514,7 @@ spec: {}
 ```
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: ProxyIngress
 metadata:
   name: myloadbalancer
@@ -529,7 +529,7 @@ spec:
 ```
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: VirtualCluster
 metadata:
   name: mycluster
@@ -575,7 +575,7 @@ deployed to same cluster as the Kafka. This reduces the amount of configuration 
 the listener status section reported by Strimzi.
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: Proxy
 metadata:
   name: myproxy
@@ -583,7 +583,7 @@ spec: {}
 ```
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: ProxyIngress
 metadata:
   name: myclusterip
@@ -596,7 +596,7 @@ spec:
 ```
 
 ```yaml
-apiVersion: proxy.kroxylicious.io/v1
+apiVersion: proxy.kroxylicious.io/v1alpha1
 kind: VirtualCluster
 metadata:
   name: mycluster
