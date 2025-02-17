@@ -96,7 +96,7 @@ status:
    # per listener status 
    ingresses:
    - name: myclusterip
-     condidtions:
+     conditions:
      - ...
 ```
 
@@ -248,10 +248,10 @@ spec:
       # Optional - peer trust
       # configMap provided by the Developer.
       trustAnchorRefs:
-       - kind: ConfigMap # if present must be ConfigMap, otherwise defaulted to ConfigMap
-         group: ""  # if present must be "", otherwise defaulted to ""
-         name: trustbundle
-         namespace: # namespace of the configmap, if omitted assumes namespace of this resource
+      - kind: ConfigMap # if present must be ConfigMap, otherwise defaulted to ConfigMap
+        group: ""  # if present must be "", otherwise defaulted to ""
+        name: trustbundle
+        namespace: # namespace of the configmap, if omitted assumes namespace of this resource
 
   # ordered list of filters to be used by the virtualcluster
   filterRefs:
@@ -327,7 +327,7 @@ kind: VirtualCluster
 metadata:
   name: mycluster
 spec:
-  proxyReference:
+  proxyRef:
     name: myproxy
     kind: Proxy
     group: proxy.kroxylicious.io
@@ -344,7 +344,7 @@ spec:
          range:
           startInclusive: 0
           endExclusive: 3
-  filterRef:
+  filterRefs:
   - group: filter.kroxylicious.io
     kind: Filter
     name: encryption 
@@ -386,7 +386,7 @@ kind: VirtualCluster
 metadata:
   name: mycluster
 spec:
-  proxyReference:
+  proxyRef:
     name: myproxy
     kind: Proxy
     group: proxy.kroxylicious.io
@@ -407,7 +407,7 @@ spec:
           startInclusive: 0
           endExclusive: 3
 
-  filterRef:
+  filterRefs:
   - group: filter.kroxylicious.io
     kind: Filter
     name: encryption 
@@ -433,7 +433,7 @@ kind: VirtualCluster
 metadata:
   name: mycluster
 spec:
-  proxyReference:
+  proxyRef:
      ...
 
   ingress:
@@ -442,13 +442,12 @@ spec:
        annotations:
          service.beta.openshift.io/serving-cert-secret-name=myservingcert   # Tells openshift to generate a secret
     tls:
-      certificateRef:
-         name: myservingcert
- 
+      certificateRefs:
+      - name: myservingcert
   targetCluster:
      ...
 
-  filterRef:
+  filterRefs:
      ...
 ```
 
@@ -487,7 +486,7 @@ kind: VirtualCluster
 metadata:
   name: mycluster
 spec:
-  proxyReference:
+  proxyRef:
     name: myproxy
     kind: Proxy
     group: proxy.kroxylicious.io
@@ -497,8 +496,8 @@ spec:
     tls:
       certificateRef:
          ...
- 
-  targetClusterRef:
+
+  targetCluster:
      bootstrapping:
        bootstrap: upstream:9092
        protocol: TLS
@@ -508,7 +507,7 @@ spec:
           startInclusive: 0
           endExclusive: 3
 
-  filterRef:
+  filterRefs:
   - group: filter.kroxylicious.io
     kind: Filter
     name: encryption 
@@ -558,7 +557,7 @@ kind: VirtualCluster
 metadata:
   name: mycluster
 spec:
-  proxyReference:
+  proxyRef:
     name: myproxy
     kind: Proxy
     group: proxy.kroxylicious.io
@@ -568,13 +567,13 @@ spec:
     tls:
       certificateRef:
          ...
- 
-  targetClusterRef:
+
+  targetCluster:
      bootstrapping:
        bootstrap: upstream:9092
        protocol: TLS
 
-  filterRef:
+  filterRefs:
   - group: filter.kroxylicious.io
     kind: Filter
     name: encryption 
@@ -625,7 +624,7 @@ kind: VirtualCluster
 metadata:
   name: mycluster
 spec:
-  proxyReference:
+  proxyRef:
     name: myproxy
     kind: Proxy
     group: proxy.kroxylicious.io
@@ -640,7 +639,7 @@ spec:
       name: my-cluster
       listenerName: mylistener
 
-  filterRef:
+  filterRefs:
   - group: filter.kroxylicious.io
     kind: Filter
     name: encryption 
@@ -660,7 +659,8 @@ spec:
 2. ClusterIP/TLS
 
 * Adds basic TLS support for downstream side
-* Key material must be provided in a single file.
+* `cerificateRefs` array limited to single secret (in other words matches the current capabilities of Kroxylicious)
+* support only one kind of key material (suggest secret containing PEM formatted `tls.crt` and password-less `tls.key`)
 * Enhances status section ->  more errors and warnings reported
 
 3. LoadBalancer
