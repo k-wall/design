@@ -199,13 +199,13 @@ spec:
 
   # Points to the cluster being proxied.  Can either be Strimzi Kafka resource or endpoint details.
   targetCluster:
-    # one of: resourceRef or resource
+    # one of: resourceRef or bootstrapping
     resourceRef:
       kind: Kafka  # must be Kafka
       group: strimzi.io # must be strimzi.io
       name: my-cluster
       listenerName: listener # name of strimzi listener 
-    resource:
+    bootstrapping:
        bootstrap: bootstrap:9092
        protocol: TCP|TLS
        nodeIdRanges:
@@ -312,7 +312,7 @@ spec:
   - name: myclusterip
 
   targetCluster:
-    resource:
+    bootstrapping:
        bootstrap: upstream:9092
        protocol: TCP
        nodeIdRanges:
@@ -374,7 +374,7 @@ spec:
          ...
 
   targetCluster:
-    resource:
+    bootstrapping:
        bootstrap: upstream:9092
        protocol: TLS
        nodeIdRanges:
@@ -475,7 +475,7 @@ spec:
          ...
  
   targetClusterRef:
-     resource:
+     bootstrapping:
        bootstrap: upstream:9092
        protocol: TLS
        nodeIdRanges:
@@ -546,7 +546,7 @@ spec:
          ...
  
   targetClusterRef:
-     resource:
+     bootstrapping:
        bootstrap: upstream:9092
        protocol: TLS
 
