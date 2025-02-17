@@ -18,8 +18,15 @@ https://excalidraw.com/#json=CVAZMl-MuN1QP2cIW3hcA,cEWi5VjUg1mK2N1lvU-_xQ
 
 ## Personas / Responsibilies
 
-* Infrastructure admin - responsible for the proxy tier and how proxies are exposed to the network.
-* Developer - responsible for the virtualcluster and filter
+### Infrastructure admin
+
+Responsible for the proxy tier and how proxies are exposed to the network.
+
+### Developer
+
+Responsible for the configuration of the virtualcluster and filters.
+Responsible for providing the virtualcluster TLS key material and trust material (in Secret and ConfigMap).
+Responsible for providing anyy key/trust material required to connect to the target cluster.
 
 ## API
 
@@ -101,7 +108,7 @@ spec:
     brokerAddressPattern: broker-$(nodeId).$(vitrtualClusterName).kafka.com
     port: # optional, defaults to 9082
   openShiftRoute:
-    # ingress controller name (optional, if omit defaults to default  in the openshift-ingress-operator namespace).
+    # ingress controller name (optional, if omitted defaults to default in the openshift-ingress-operator namespace).
     resourceRef:
       kind: IngressController  # if present must be IngressController, otherwise defaulted to IngressController
       group: operator.openshift.io # if present must be operator.openshift.io, otherwise defaulted to operator.openshift.io
@@ -165,12 +172,14 @@ spec:
   - name: myclusterip
     tls:
       # server certificate - grab bag matched by hostname (what about key/keystore password?)
+      # secrets provided by the Developer.
       certificateRefs:
       - kind: Secret # if present must be Secret, otherwise defaulted to Secret
         group: ""  # if present must be "", otherwise defaulted to ""
         name: servercert
         namespace: # namespace of the secret, if omitted assumes namespace of this resource
      # peer trust
+     # configMap provided by the Developer
      trustAnchorRefs:
       - kind: ConfigMap # if present must be ConfigMap, otherwise defaulted to ConfigMap
         group: ""  # if present must be "", otherwise defaulted to ""
@@ -206,12 +215,14 @@ spec:
           endExclusive: 3
     tls:
       # Optional - client auth
+      # secret provided by the Developer.
       certificateRef:
         kind: Secret # if present must be Secret, otherwise defaulted to Secret
         group: ""  # if present must be "", otherwise defaulted to ""
         name: servercert
         namespace: # namespace of the secret, if omitted assumes namespace of this resource
       # Optional - peer trust
+      # configMap provided by the Developer.
       trustAnchorRefs:
        - kind: ConfigMap # if present must be ConfigMap, otherwise defaulted to ConfigMap
          group: ""  # if present must be "", otherwise defaulted to ""
@@ -378,14 +389,15 @@ spec:
     name: encryption 
 ```
 
+What the Developer would provide:
+* secret containing server certificate to be used by the virtual cluster.  SAN name would need to match the service that will be created by the Operator (documentation required).
+
 What would operator create:
 * kroxylicious deployment, 1 replica
 * proxy relies on port based routing  (needs new PortPerNode scheme that allows the Operator to control the ports precisely.  This is needed to prevent the potential for "crossed-lines" during reconcilations.)
 * 1 ClusterIP services (with n+1 ports) - operator needs to _deterministically_ assign a block of ports for this VC and create the port/target mapping in the Service accordingly.
 * Kafka Clients connect to serviceaddress:9082 
 
-What the user would provide:
-* secret containing server certificate with the services
 
 ### On Cluster Traffic - tls downstream & upstream - varation using OpenShift Cluster CA generated cert
 
@@ -416,11 +428,12 @@ spec:
      ...
 ```
 
+What the Developer would provide:
+(nothing - openshift is generating the serving cert for us and providing DNS)
+
 What would operator create:
 (as above)
 
-What the user would provide:
-(nothing - openshift is generating the serving cert for us and providing DNS)
 
 ## Off Cluster Traffic (OpenShift Route)
 
@@ -477,6 +490,9 @@ spec:
     name: encryption 
 ```
 
+What the Developer would provide:
+* secret containing server certificate with SAN names matching the hostnames applied to the routes
+
 What would operator create:
 * kroxylicious deployment, 1 replica
 * proxy relies on SNI based routing (use SNI scheme)
@@ -485,8 +501,6 @@ What would operator create:
 
 Note: that the operator would write the virtualcluster proxy config based on the hostnames assigned to the Routes by the Ingress Controller.
 
-What the user would provide:
-* secret containing server certificate with SAN names matching the hostnames applied to the routes
 
 
 ## Off Cluster Traffic (Load Balancer)
@@ -542,15 +556,16 @@ spec:
     name: encryption 
 ```
 
+What Developer would provide:
+
+* DNS configuration that resolves the virtual clusters names to the service's assigned ClusterIP.
+* secret containing server certificate with SAN names matching the hostnames applied to the routes
+
 What would operator create:
 * kroxylicious deployment, 1 replica
 * proxy relies on SNI based routing (use SNI scheme)
 * LoadBalancer service called `myloadbalancer-service` (shared)
 
-What user would provide:
-
-* DNS configuration that resolves the virtual clusters names to the service's assigned ClusterIP.
-* secret containing server certificate with SAN names matching the hostnames applied to the routes
 
 
 ## Upstream specified by Kafka CR
