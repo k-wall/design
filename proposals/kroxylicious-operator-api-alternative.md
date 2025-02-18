@@ -280,7 +280,7 @@ status:
 
 ## Filter
 
-The VirtualCluster CR is the responsibilty of the the Developer - As per current implementation.
+The VirtualCluster CR is the responsibility of the Developer - As per current implementation.
 
 ```yaml
 apiVersion: filter.kroxylicious.io/v1alpha1
