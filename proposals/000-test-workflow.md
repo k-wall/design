@@ -10,3 +10,4 @@ Verify that:
 1. The workflow detects this file (starts with 000-)
 2. The workflow updates the PR description with a warning
 3. The workflow provides the correct renaming command
+4. HTML entities are used instead of backticks (cleaner syntax)
