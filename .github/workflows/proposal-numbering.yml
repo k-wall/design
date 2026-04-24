@@ -51,15 +51,17 @@ jobs:
           INCORRECT_FILES=""
           for file in $PROPOSAL_FILES; do
             if [[ ! "$file" =~ ^${EXPECTED_PREFIX} ]]; then
-              INCORRECT_FILES="$INCORRECT_FILES\n- \`$file\`"
+              if [ -z "$INCORRECT_FILES" ]; then
+                INCORRECT_FILES="$file"
+              else
+                INCORRECT_FILES="$INCORRECT_FILES,$file"
+              fi
             fi
           done
 
           if [ -n "$INCORRECT_FILES" ]; then
             echo "incorrect=true" >> $GITHUB_OUTPUT
-            echo "files<<EOF" >> $GITHUB_OUTPUT
-            echo -e "$INCORRECT_FILES" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            echo "files=$INCORRECT_FILES" >> $GITHUB_OUTPUT
             echo "expected_prefix=$EXPECTED_PREFIX" >> $GITHUB_OUTPUT
           else
             echo "incorrect=false" >> $GITHUB_OUTPUT
@@ -72,31 +74,35 @@ jobs:
           script: |
             const prNumber = context.payload.pull_request.number;
             const expectedPrefix = '${{ steps.check.outputs.expected_prefix }}';
-            const incorrectFiles = `${{ steps.check.outputs.files }}`;
+            const incorrectFilesRaw = '${{ steps.check.outputs.files }}';
 
-            const warningSection = `
-            ---
+            // Format files as markdown list
+            const filesList = incorrectFilesRaw.split(',').map(f => `- <code>${f}</code>`).join('\n');
 
-            ## ⚠️ Proposal File Numbering
-
-            This PR contains proposal files that don't follow the expected numbering scheme:
-
-            ${incorrectFiles}
-
-            **Expected naming:** \`${expectedPrefix}<descriptive-name>.md\`
-
-            Please rename your proposal file to use PR #${prNumber}:
-
-            \`\`\`bash
-            git mv proposals/000-<name>.md ${expectedPrefix}<name>.md
-            # or rename from current name to correct name
-            git commit -m "Rename proposal to use PR number ${prNumber}"
-            git push
-            \`\`\`
-
-            See [proposals/README.md](https://github.com/kroxylicious/design/blob/main/proposals/README.md) for the complete workflow.
-
-            <!-- proposal-numbering-check -->`;
+            const warningSection = [
+              '---',
+              '',
+              '## ⚠️ Proposal File Numbering',
+              '',
+              'This PR contains proposal files that don\'t follow the expected numbering scheme:',
+              '',
+              filesList,
+              '',
+              `**Expected naming:** <code>${expectedPrefix}&lt;descriptive-name&gt;.md</code>`,
+              '',
+              `Please rename your proposal file to use PR #${prNumber}:`,
+              '',
+              '```bash',
+              `git mv proposals/000-<name>.md ${expectedPrefix}<name>.md`,
+              '# or rename from current name to correct name',
+              `git commit -m "Rename proposal to use PR number ${prNumber}"`,
+              'git push',
+              '```',
+              '',
+              'See [proposals/README.md](https://github.com/kroxylicious/design/blob/main/proposals/README.md) for the complete workflow.',
+              '',
+              '<!-- proposal-numbering-check -->'
+            ].join('\n');
 
             // Get current PR
             const { data: pr } = await github.rest.pulls.get({
