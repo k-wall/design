@@ -33,7 +33,8 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           # Find all .md files directly in proposals directory (not subdirectories)
-          ALL_PROPOSAL_FILES=$(git diff --name-only --diff-filter=A origin/${{ github.base_ref }}...HEAD | grep '^proposals/[^/]*\.md$' || true)
+          # Include both Added (A) and Renamed (R) files
+          ALL_PROPOSAL_FILES=$(git diff --name-only --diff-filter=AR origin/${{ github.base_ref }}...HEAD | grep '^proposals/[^/]*\.md$' || true)
 
           # Filter out non-proposal files (README.md and template)
           PROPOSAL_FILES=""
@@ -191,7 +192,7 @@ jobs:
             let currentBody = pr.body || '';
 
             // Check if warning section exists
-            const markerRegex = /---\s*\n\s*##\s*⚠️\s*Proposal File Numbering[\s\S]*?<!-- proposal-numbering-check -->/;
+            const markerRegex = /---\s*\n\s*##\s*⚠️\s*Proposal (File )?Numbering[\s\S]*?<!-- proposal-numbering-check -->/;
 
             if (markerRegex.test(currentBody)) {
               // Remove warning section
