@@ -13,8 +13,6 @@ name: Check Proposal Numbering
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - 'proposals/*.md'
 
 permissions:
   pull-requests: write
