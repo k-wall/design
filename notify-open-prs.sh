@@ -10,7 +10,7 @@
 
 set -e
 
-OPEN_PRS=(70 82 83 85 88 93 94)
+OPEN_PRS=(70 82 83 85 88 93 94 96 98 99 100 101 103)
 
 COMMENT_BODY="Hi! We've updated the proposal numbering system to use PR numbers as proposal identifiers.
 
