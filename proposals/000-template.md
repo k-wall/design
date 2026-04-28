@@ -12,9 +12,9 @@ See proposals/README.md for complete instructions.
 This template is provided as an example with sections you may wish to comment on with respect to your proposal. Add or remove sections as required to best articulate the proposal.
 -->
 
-# <Title>
+# <PR-NUMBER> - <Title>
 
-**Proposal**: #<PR-NUMBER>  <!-- Update this after opening your PR -->
+**Proposal**: #<PR-NUMBER>  <!-- Update both title and this line after opening your PR -->
 
 Provide a brief summary of the feature you are proposing to add to Kroxylicious.
 

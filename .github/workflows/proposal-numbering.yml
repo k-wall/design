@@ -59,7 +59,9 @@ jobs:
           EXPECTED_PREFIX=$(printf "proposals/%03d-" $PR_NUMBER)
 
           INCORRECT_FILES=""
+          INCORRECT_TITLES=""
           for file in $PROPOSAL_FILES; do
+            # Check filename
             if [[ ! "$file" =~ ^${EXPECTED_PREFIX} ]]; then
               if [ -z "$INCORRECT_FILES" ]; then
                 INCORRECT_FILES="$file"
@@ -67,11 +69,22 @@ jobs:
                 INCORRECT_FILES="$INCORRECT_FILES,$file"
               fi
             fi
+
+            # Check title format (should be: # <PR_NUMBER> - <Title>)
+            EXPECTED_TITLE_PREFIX="# $PR_NUMBER -"
+            if ! grep -q "^${EXPECTED_TITLE_PREFIX}" "$file"; then
+              if [ -z "$INCORRECT_TITLES" ]; then
+                INCORRECT_TITLES="$file"
+              else
+                INCORRECT_TITLES="$INCORRECT_TITLES,$file"
+              fi
+            fi
           done
 
-          if [ -n "$INCORRECT_FILES" ]; then
+          if [ -n "$INCORRECT_FILES" ] || [ -n "$INCORRECT_TITLES" ]; then
             echo "incorrect=true" >> $GITHUB_OUTPUT
             echo "files=$INCORRECT_FILES" >> $GITHUB_OUTPUT
+            echo "titles=$INCORRECT_TITLES" >> $GITHUB_OUTPUT
             echo "expected_prefix=$EXPECTED_PREFIX" >> $GITHUB_OUTPUT
           else
             echo "incorrect=false" >> $GITHUB_OUTPUT
@@ -85,29 +98,55 @@ jobs:
             const prNumber = context.payload.pull_request.number;
             const expectedPrefix = '${{ steps.check.outputs.expected_prefix }}';
             const incorrectFilesRaw = '${{ steps.check.outputs.files }}';
+            const incorrectTitlesRaw = '${{ steps.check.outputs.titles }}';
 
-            // Format files as markdown list
-            const filesList = incorrectFilesRaw.split(',').map(f => `- <code>${f}</code>`).join('\n');
+            const warnings = [];
+
+            // Check filename issues
+            if (incorrectFilesRaw) {
+              const filesList = incorrectFilesRaw.split(',').map(f => `- <code>${f}</code>`).join('\n');
+              warnings.push(
+                '**Incorrect filename:**',
+                '',
+                filesList,
+                '',
+                `**Expected naming:** <code>${expectedPrefix}&lt;descriptive-name&gt;.md</code>`,
+                '',
+                `Rename your proposal file to use PR #${prNumber}:`,
+                '',
+                '```bash',
+                `git mv proposals/000-<name>.md ${expectedPrefix}<name>.md`,
+                '```'
+              );
+            }
+
+            // Check title issues
+            if (incorrectTitlesRaw) {
+              const titlesList = incorrectTitlesRaw.split(',').map(f => `- <code>${f}</code>`).join('\n');
+              if (warnings.length > 0) warnings.push('', '---', '');
+              warnings.push(
+                '**Incorrect title format:**',
+                '',
+                titlesList,
+                '',
+                `**Expected title format:** <code># ${prNumber} - &lt;Your Title&gt;</code>`,
+                '',
+                `Update the H1 heading in your proposal to include the PR number:`,
+                '',
+                '```markdown',
+                `# ${prNumber} - My Feature Title`,
+                '```'
+              );
+            }
 
             const warningSection = [
               '---',
               '',
-              '## ⚠️ Proposal File Numbering',
+              '## ⚠️ Proposal Numbering',
               '',
-              'This PR contains proposal files that don\'t follow the expected numbering scheme:',
+              'This PR contains proposal files that don\'t follow the expected format:',
               '',
-              filesList,
-              '',
-              `**Expected naming:** <code>${expectedPrefix}&lt;descriptive-name&gt;.md</code>`,
-              '',
-              `Please rename your proposal file to use PR #${prNumber}:`,
-              '',
-              '```bash',
-              `git mv proposals/000-<name>.md proposals/${expectedPrefix}-<name>.md`,
-              '# or rename from current name to correct name',
-              `git commit -m "Rename proposal to use PR number ${prNumber}"`,
-              'git push',
-              '```',
+              ...warnings,
               '',
               'See [proposals/README.md](https://github.com/kroxylicious/design/blob/main/proposals/README.md) for the complete workflow.',
               '',
@@ -124,7 +163,7 @@ jobs:
             let currentBody = pr.body || '';
 
             // Remove existing warning section if present
-            const markerRegex = /---\s*\n\s*##\s*⚠️\s*Proposal File Numbering[\s\S]*?<!-- proposal-numbering-check -->/;
+            const markerRegex = /---\s*\n\s*##\s*⚠️\s*Proposal (File )?Numbering[\s\S]*?<!-- proposal-numbering-check -->/;
             currentBody = currentBody.replace(markerRegex, '').trim();
 
             // Append new warning section

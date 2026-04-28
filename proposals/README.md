@@ -13,9 +13,11 @@ This directory contains proposals for the Kroxylicious project.
    - Push your branch and open a PR on GitHub
    - Note your PR number (e.g., #105)
 
-3. **Rename the file** to use your PR number (three-digit zero-padded):
+3. **Rename the file and update the title** to use your PR number (three-digit zero-padded):
    ```bash
    git mv proposals/000-<descriptive-name>.md proposals/105-<descriptive-name>.md
+   # Edit the file to update the title to: # 105 - <Your Title>
+   # and the Proposal line to: **Proposal**: #105
    git commit -m "Rename proposal to use PR number"
    git push
    ```
