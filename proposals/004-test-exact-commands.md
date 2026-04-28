@@ -13,9 +13,9 @@ See proposals/README.md for complete instructions.
 This template is provided as an example with sections you may wish to comment on with respect to your proposal. Add or remove sections as required to best articulate the proposal.
 -->
 
-# <PR-NUMBER> - <Title>
+# 4 - Test Exact Commands
 
-Provide a brief summary of the feature you are proposing to add to Kroxylicious.
+This is a test proposal to validate the workflow provides exact, copy-pasteable commands.
 
 ## Current situation
 
