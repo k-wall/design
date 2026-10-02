@@ -11,7 +11,7 @@ PROPOSAL WORKFLOW:
 See proposals/README.md for complete instructions.
 -->
 
-# 000 - Kubernetes CRD Changes for Routing API
+# 142 - Kubernetes CRD Changes for Routing API
 
 The [routing API proposal (070)](070-routing-api.md) introduces Routers as top-level plugins that
 direct client requests across multiple Kafka clusters via named Routes. This proposal specifies the
